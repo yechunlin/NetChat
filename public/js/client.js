@@ -16,7 +16,7 @@ if ('WebSocket' in window) {
 //连接成功
 ws.onopen=function(){
 	var params = GetRequest();
-	$.post('./api/index.php',{params},function(data){
+	$.post('./api/index.php',params,function(data){
 		if(parseInt(data.code)){
 			clientName = data.nickname;
 			clientImg = data.img;
