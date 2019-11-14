@@ -106,6 +106,7 @@ function handleData($ws, $data){
 		preg_match_all('/data-to="(.*?)"/', $data['msg'], $arr_to);
 		if(!empty($arr_to[1])){
 			$data['at'] = $arr_to[1];
+			$data['msg'] .= "&nbsp";
 		}
 	}
 	

@@ -30,7 +30,7 @@ ws.onopen=function(){
 //消息触发回调
 ws.onmessage=function(msg){
 	eval('var data='+msg.data);
-	if(data.private == 1){
+	if(parseInt(data.private)){
 		if(data.id == clientId){
 			content = $('#content_'+data.for_id);
 			var red_notice = $('#red_'+data.for_id);
@@ -295,9 +295,9 @@ $(function(){
 		var index = $(this).index();
 		var id = $(this).attr('data-index');
 		var to_from = $('#'+id+' .username').text();
-		if(index == 0){
-			$('#input_box').append('<input type="button" value="@'+to_from+'" class="zhaohuan" data-to="'+id+'">:');
-		}else if(index == 1){
+		if(!parseInt(index)){
+			$('#input_box').append('<input type="button" value="@'+to_from+'" class="zhaohuan" data-to="'+id+'">');
+		}else if(parseInt(index)){
 			$('#ct_top').text(to_from);
 			content.hide();
 			if($('#content_'+id).length==0){
