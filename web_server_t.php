@@ -4,7 +4,7 @@ $ws = new swoole_websocket_server('172.21.0.16',8888,SWOOLE_PROCESS, SWOOLE_SOCK
 //启用swoole内置表
 $table  = new swoole_table(4096);
 $table->column('userid', swoole_table::TYPE_INT);
-$table->column('name', swoole_table::TYPE_STRING,64);
+$table->column('nickname', swoole_table::TYPE_STRING,64);
 $table->column('img', swoole_table::TYPE_STRING,128);
 $table->create();
 
@@ -49,7 +49,7 @@ $ws->on('finish',function($ws, $task_id, $data){
 
 //接收请求回调
 $ws->on('message', function($ws, $frame){
-    	parse_str($frame->data, $data);
+    parse_str($frame->data, $data);
 	$data['id'] = $frame->fd;
 	$task_id = $ws->task($data);//投递task异步任务
 });
@@ -61,7 +61,7 @@ $ws->on('close', function($ws, $fd){
 		$data = array(
 			'flag'=>'leave',
 			'id'  =>$fd,
-			'name'=>$client['name']
+			'nickname'=>$client['nickname']
 		);
 		$ws->table->del($fd);
 		sendmsg($ws,$ws->table, $data);//通知其他人，某人下线
@@ -86,7 +86,7 @@ function handleData($ws, $data){
 		$old_clients = $clients;
 		$clients[$data['id']] = array(
 			'userid'=>$data['id'],
-			'name'=>$data['name'],
+			'nickname'=>$data['name'],
 			'img'=>$data['img']
 		);
 		$ws->table->set($data['id'],$clients[$data['id']]);

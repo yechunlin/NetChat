@@ -100,7 +100,7 @@
 		width:20px;
 		height:20px;
 		display:block;
-		margin:4px;
+		margin:4px 6px;
 		float:left;
 		background-repeat:no-repeat;
 		background-position:center;
@@ -142,6 +142,13 @@
 		font-size:10px;
 		line-height:20px;
 	}
+	.show_name{
+		width:100px;
+		margin-left:35px;
+		font-size:10px;
+		color:#9d9d9d;
+		padding:0 0 3px 0
+	}
 	.send_msg_img,.send_msg_img_right{
 		width:30px;
 		height:30px;	
@@ -156,7 +163,7 @@
 		line-height:30px;
 		padding: 0 10px 0 10px;
 		border-radius:2px;
-		margin-left:5px
+		margin-left:5px;max-width:300px
 	}
 	.send_msg_img_right{
 		float:right;
@@ -210,20 +217,20 @@
 		background:#fff;
 		display:none
 	}
-	#emoji_box span:nth-child(1){
-		background-image:url('./public/images/index/1.jpg')
+	#ct_file span:nth-child(2){
+		background-image:url('../images/index/emoji.jpg')
 	}
-	#emoji_box span:nth-child(2){
-		background-image:url('./public/images/index/2.jpg')
+	#ct_file span:nth-child(3){
+		background-image:url('../images/index/file.jpg')
 	}
-	#emoji_box span:nth-child(3){
-		background-image:url('./public/images/index/3.jpg')
+	#ct_file span:nth-child(4){
+		background-image:url('../images/index/history.jpg')
 	}
-	#emoji_box span:nth-child(4){
-		background-image:url('./public/images/index/4.jpg')
+	#ct_file span:nth-child(5){
+		background-image:url('../images/index/cut.jpg')
 	}
-	#emoji_box span:nth-child(5){
-		background-image:url('./public/images/index/5.jpg')
+	#ct_file span:nth-child(6){
+		background-image:url('../images/index/video.jpg')
 	}
     #emoji_box img{
 		margin:1px;

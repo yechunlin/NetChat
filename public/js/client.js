@@ -21,7 +21,7 @@ ws.onopen=function(){
 			clientImg = data.img;
 			$('#login_user_img').css('background-image','url('+clientImg+')');
 			$('#login_user').text(clientName);
-			ws.send('flag=new&name='+clientName+'&img='+clientImg);
+			ws.send('flag=new&nickname='+clientName+'&img='+clientImg);
 		}	
 	},'json');
 }
@@ -80,13 +80,13 @@ ws.onmessage=function(msg){
 	
 	if(data.flag == 'new'){
 		//新人加入
-		content.append(addSystem(data.name+'加入群聊'));
+		content.append(addSystem(data.nickname+'加入群聊'));
 		if(data.clients){
 			for(var i in data.clients){
-				userlist.append(addClients(i,data.clients[i]['img'],data.clients[i]['name']));
+				userlist.append(addClients(i,data.clients[i]['img'],data.clients[i]['nickname']));
 			}
 		}else{
-			userlist.append(addClients(data.id,data.img,data.name));
+			userlist.append(addClients(data.id,data.img,data.nickname));
 		}
 		if(clientId == 0){
 			clientId = data.id;//纪录当前用户id
@@ -94,9 +94,9 @@ ws.onmessage=function(msg){
 	}else if(data.flag == 'normal'){
 		//文字消息
 		if(clientId == data.id){
-			content.append(addNormal(data.img,data.msg,'_right'));
+			content.append(addNormal(data,'_right'));
 		}else{
-			content.append(addNormal(data.img,data.msg));
+			content.append(addNormal(data));
 		}
 	}else if(data.flag == 'pic'){
 		//发送图片
@@ -121,17 +121,21 @@ function addClients(id,img,name){
 }
 
 //normal消息回复
-function addNormal(img,msg,loc=''){
-	var boxwidth = '';
-	if(msg.length > 40){
-		boxwidth = 'width:350px';
+function addNormal(data,loc=''){
+	var show_name = '<div class="show_name">'+data.nickname+'</div>';
+	if(parseInt(isPrivate)){
+		show_name = '';
 	}
-	return '<div class="send_msg_box"><div class="send_msg_img'+loc+'" style="background-image:url('+img+')"></div><div class="send_msg'+loc+'" style="'+boxwidth+'">'+msg+'</div></div>';
+	return '<div class="send_msg_box"><div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div>'+show_name+'<div class="send_msg'+loc+'">'+data.msg+'</div></div>';
 }
 
 //pic消息回复
 function addPic(data,loc=''){
-	return '<div class="send_msg_box"><div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div><img src="'+data.msg+'" style="width:'+data.w+'px;height:'+data.h+'px;background:none" class="send_msg'+loc+'"></div>';
+	var show_name = '<div class="show_name">'+data.nickname+'</div>';
+	if(parseInt(isPrivate)){
+		show_name = '';
+	}
+	return '<div class="send_msg_box"><div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div>'+show_name+'<img src="'+data.msg+'" style="width:'+data.w+'px;height:'+data.h+'px;background:none" class="send_msg'+loc+'"></div>';
 }
 
 //系统消息
@@ -201,21 +205,6 @@ $('#sendimg').on('change',function(e){
 	
 })
 
-//登录头像显示
-$('#headimg').on('change',function(e){
-	var file = e.target.files[0];
-	if(file.type.match('image.*')){
-		var obj = new FileReader();
-		obj.readAsDataURL(file);
-		obj.onload=function(f){
-			$('#showimg').attr('src',f.target.result);
-			$('#showimg').show();
-			$('#showimg').parent('p').show();
-		}
-	
-	}
-})
-
 $('#ct_file .file_img').click(function(event){
 	var index = $(this).index();
 	if(index == 1){
@@ -224,7 +213,7 @@ $('#ct_file .file_img').click(function(event){
 		var state = emoji.css('display');
 		if(state == 'none'){
 			for(var i=0;i<61;i++){
-				emoji.append('<img src="./emoji/face/'+i+'.gif" id="gif_'+i+'">');
+				emoji.append('<img src="./public/images/emoji/face/'+i+'.gif" id="gif_'+i+'">');
 			}
 			emoji.show();
 		}else{
