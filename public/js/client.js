@@ -123,7 +123,7 @@ function addClients(id,img,name){
 //normal消息回复
 function addNormal(data,loc=''){
 	var show_name = '<div class="show_name">'+data.nickname+'</div>';
-	if(parseInt(isPrivate)){
+	if(parseInt(isPrivate) || loc!=''){
 		show_name = '';
 	}
 	return '<div class="send_msg_box"><div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div>'+show_name+'<div class="send_msg'+loc+'">'+data.msg+'</div></div>';
@@ -132,7 +132,7 @@ function addNormal(data,loc=''){
 //pic消息回复
 function addPic(data,loc=''){
 	var show_name = '<div class="show_name">'+data.nickname+'</div>';
-	if(parseInt(isPrivate)){
+	if(parseInt(isPrivate) || loc!=''){
 		show_name = '';
 	}
 	return '<div class="send_msg_box"><div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div>'+show_name+'<img src="'+data.msg+'" style="width:'+data.w+'px;height:'+data.h+'px;background:none" class="send_msg'+loc+'"></div>';
