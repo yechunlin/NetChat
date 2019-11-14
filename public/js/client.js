@@ -146,7 +146,7 @@ function addSystem(systemmsg){
 
 //获取url参数
 function GetRequest() {
-   var url = location.search; //获取url中"?"符后的字串
+   var url = decodeURI(location.search); //获取url中"?"符后的字串,支持汉字url解码
    var theRequest = new Object();
    if (url.indexOf("?") != -1) {
 	  var str = url.substr(1);
