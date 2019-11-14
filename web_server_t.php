@@ -86,7 +86,7 @@ function handleData($ws, $data){
 		$old_clients = $clients;
 		$clients[$data['id']] = array(
 			'userid'=>$data['id'],
-			'nickname'=>$data['name'],
+			'nickname'=>$data['nickname'],
 			'img'=>$data['img']
 		);
 		$ws->table->set($data['id'],$clients[$data['id']]);
