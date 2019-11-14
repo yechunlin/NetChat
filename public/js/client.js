@@ -18,7 +18,7 @@ ws.onopen=function(){
 	$.post('./api/index.php',{},function(data){
 		if(parseInt(data.code)){
 			clientName = data.nickname;
-			clientImg = data.url;
+			clientImg = data.img;
 			$('#login_user_img').css('background-image','url('+clientImg+')');
 			$('#login_user').text(clientName);
 			ws.send('flag=new&name='+clientName+'&img='+clientImg);
