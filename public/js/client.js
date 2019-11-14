@@ -15,18 +15,15 @@ if ('WebSocket' in window) {
 
 //连接成功
 ws.onopen=function(){
-	clientName = 'NetChat' + parseInt(Math.random()*1000);
-	clientImg = './public/images/heads/default.jpg';
-	$('#login_user_img').css('background-image','url('+clientImg+')');
-	$('#login_user').text(clientName);
-	/*$.post('login.php',{'nickname':clientName},function(data){
+	$.post('./api/index.php',{},function(data){
 		if(parseInt(data.code)){
+			clientName = data.nickname;
 			clientImg = data.url;
 			$('#login_user_img').css('background-image','url('+clientImg+')');
 			$('#login_user').text(clientName);
 			ws.send('flag=new&name='+clientName+'&img='+clientImg);
 		}	
-	},'json');*/
+	},'json');
 }
 
 //消息触发回调

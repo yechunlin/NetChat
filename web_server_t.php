@@ -1,5 +1,5 @@
 <?php
-$ws = new swoole_websocket_server('172.21.0.16',8888,SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+$ws = new swoole_websocket_server('172.21.0.16',8888,SWOOLE_PROCESS, SWOOLE_SOCK_TCP);
 
 //启用swoole内置表
 $table  = new swoole_table(4096);
@@ -125,7 +125,7 @@ function handleData($ws, $data){
 		$userid = $ws->table->get($data['id'],'userid');
 		$for_userid = $ws->table->get($data['for_id'],'userid');
 		sendmsg($ws,$sl_arr,$data);
-		savemsg($redis, $userid, $for_userid, $data);
+		//savemsg($redis, $userid, $for_userid, $data);
 	}else{
 		//群聊
 		if($old_clients){
