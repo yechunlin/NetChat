@@ -110,6 +110,7 @@ function handleData($ws, $data){
 	}
 	
 	$data['img'] = $ws->table->get($data['id'],'img');
+	$data['nickname'] = $ws->table->get($data['id'],'nickname');
 
 	//连续五分钟内无交互，显示一次时间
 	if(!$redis->get('web_socket_time')){
