@@ -15,7 +15,8 @@ if ('WebSocket' in window) {
 
 //连接成功
 ws.onopen=function(){
-	$.post('./api/index.php',{},function(data){
+	var params = GetRequest();
+	$.post('./api/index.php',{params},function(data){
 		if(parseInt(data.code)){
 			clientName = data.nickname;
 			clientImg = data.img;
@@ -141,6 +142,20 @@ function addPic(data,loc=''){
 //系统消息
 function addSystem(systemmsg){
 	return '<div class="send_msg_box"><div class="system_msg">'+systemmsg+'</div></div>';
+}
+
+//获取url参数
+function GetRequest() {
+   var url = location.search; //获取url中"?"符后的字串
+   var theRequest = new Object();
+   if (url.indexOf("?") != -1) {
+	  var str = url.substr(1);
+	  strs = str.split("&");
+	  for(var i = 0; i < strs.length; i ++) {
+		theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
+	  }
+   }
+   return theRequest;
 }
 
 $('#sb').click(function(){
