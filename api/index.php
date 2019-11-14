@@ -1,5 +1,5 @@
 <?php
-include_once('../global/global_netchat.php');
+include_once('../../global/global_netchat.php');
 $nickname = isset($_POST['nickname']) ? trim($_POST['nickname']) : 'NetChat'.rand(100,999);
 $ip = getIp();
 $ms = new Mysql;
