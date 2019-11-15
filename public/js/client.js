@@ -337,7 +337,7 @@ $(function(){
 
 //返回群聊界面
 $('#qunliao').click(function(){
-	$('#ct_top').text('广场');
+	$('#ct_top').text('群聊');
 	content = $('#content_0');
 	$('.content').hide();
 	content.show();
