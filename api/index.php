@@ -1,19 +1,25 @@
 <?php
-$url = 'http://49.233.147.39/NetChat/api/index.php';
-echo $res = curl_post($url, $_POST);
-die();
-function curl_post($url,$data){
-	$ch = curl_init();
-	curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-	//curl_setopt($ch,CURLOPT_FOLLOWLOCATION, 1);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-	curl_setopt($ch,CURLOPT_USERAGENT,'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36');
-	curl_setopt($ch,CURLOPT_URL,$url);
-	curl_setopt($ch,CURLOPT_POST,true);
-	curl_setopt($ch,CURLOPT_POSTFIELDS,$data);
-	$output = curl_exec($ch);
-	curl_close($ch);
-	return $output;	
+include_once('../../global/global_netchat.php');
+$nickname = 'Chat'.rand(100,999);
+if(isset($_POST['nickname'])&&!empty($_POST['nickname'])){
+	$nickname = trim($_POST['nickname']);
 }
-
-?>
+$ip = getIp();
+$ms = new Mysql;
+$data = array(
+	'ip' => $ip,
+	'nickname' => $nickname,
+	'dated' => date('Y-m-d H:i:s')
+);	
+$res = $ms->insert('clients', $data);
+$returnData = array(
+	'code' => 0,
+	'nickname' => '',
+	'img' => ''
+);
+if($res){
+	$returnData['code'] = 1;
+	$returnData['nickname'] = $nickname;
+	$returnData['img'] = './public/images/heads/default.jpg';
+}
+die(json_encode($returnData));
