@@ -109,7 +109,7 @@ ws.onmessage=function(msg){
 		
 	}else if(data.flag == 'leave'){
 		//离开
-		content.append(addSystem(data.name+'离开群聊'));
+		content.append(addSystem(data.nickname+'离开群聊'));
 		$('#'+data.id).remove();
 	}
 	//滚动条事件，只能原生写，真是服
