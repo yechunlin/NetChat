@@ -108,7 +108,7 @@
 		cursor: pointer;
 		position:relative
 	}
-	#sendimg{
+	#sendFile{
 		position:absolute; 
 		top:0; 
 		right:0; 
