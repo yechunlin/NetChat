@@ -158,7 +158,6 @@ function GetRequest() {
    return theRequest;
 }
 
-//发送
 $('#sb').click(function(){
 	var msg = $('#input_box');
 	if(msg.html() == ""){
@@ -173,7 +172,6 @@ $('#sb').click(function(){
 	$('#input_box').html('');
 })
 
-//enter键发送
 $("#input_box").bind("keydown",function(event){
 	var keycode = event.which;
 	var inputTxt = $(this);
@@ -191,19 +189,14 @@ $("#input_box").bind("keydown",function(event){
 	}
 });
 
-//发送文件
-var fileChunkSize = 1 * 1024 * 1024;//1M
-var fileStart = 0;
-
-$('#sendFile').on('change',function(e){
+//选取图片
+$('#sendimg').on('change',function(e){
 	var file = e.target.files[0];
-	if(/image\/\w+/.test(file.type)) {
-		uploadImage(file)
-    }	
-})
-function uploadImage(file){
-	doUpload(file);
-	/*var obj = new FileReader();
+	if(!/image\/\w+/.test(file.type)) {
+           alert("暂时只支持图片类型");
+           return false;
+    }
+	var obj = new FileReader();
 	obj.readAsDataURL(file);
 	obj.onload=function(f){
 		var image = new Image();
@@ -223,40 +216,10 @@ function uploadImage(file){
 			ws.send(message);
 		}
 
-	}*/	
-}
-//执行上传
-function doUpload(obj){
-	var file = obj;
-	if(fileStart < file.size){
-		var blob = file.slice(fileStart, fileStart + fileChunkSize);
-		var formData = new FormData();
-		fileStart = fileStart + blob.size;
-		formData.append('file',blob);
-		$.ajax({
-			url:'./api/uploadHandel.php',
-			type: 'POST',
-			dataType: 'json',
-			data: formData,
-			//这两个设置项必填
-			contentType: false,
-			processData: false,
-			success:function(data){
-				if(data.state==1){
-					progress(fileStart,file);
-					doUpload(file);
-				}
-			}
-		})
 	}
-}
-//进度调用
-function progress(start,obj){
-	var pc = (start/obj.size) * 100;
-	console.log(pc+'%');
-}
+	
+})
 
-//工具栏事件
 $('#ct_file .file_img').click(function(event){
 	var index = $(this).index();
 	if(index == 1){
@@ -394,4 +357,33 @@ $("#input_box").blur(function(){
   $("#sb_box").css("background","#f5f5f5");
 });
 
-
+ //开启摄像头 要求https
+ /*
+	var video = document.getElementById('video'),
+        canvas = document.getElementById('canvas'),
+        snap = document.getElementById('tack'),
+        img = document.getElementById('video_img'),
+        vendorUrl = window.URL || window.webkitURL;
+        
+    //媒体对象
+    navigator.getMedia = navigator.getUserMedia || navagator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+    navigator.getMedia({
+        video: true, //使用摄像头对象
+        audio: false  //不适用音频
+    }, function(strem){
+        console.log(strem);
+        video.src = vendorUrl.createObjectURL(strem);
+        video.play();
+    }, function(error) {
+        //error.code
+        console.log(error);
+    });
+    snap.addEventListener('click', function(){
+    
+        //绘制canvas图形
+        canvas.getContext('2d').drawImage(video, 0, 0, 400, 300);
+        
+        //把canvas图像转为img图片
+        img.src = canvas.toDataURL("image/png");
+        
+    })*/
