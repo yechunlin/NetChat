@@ -17,7 +17,7 @@ $redis->select(1);
 $ws->set(array(
 		'task_worker_num' => 4,
 		'worker_num' => 4,
-		'daemonize'=>1
+		'daemonize'=>0
 	)
 );
 
