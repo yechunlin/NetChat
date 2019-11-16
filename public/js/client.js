@@ -191,70 +191,42 @@ $("#input_box").bind("keydown",function(event){
 	}
 });
 
-//发送文件
-var fileChunkSize = 1 * 1024 * 1024;//1M
-var fileStart = 0;
-
-$('#sendFile').on('change',function(e){
-	var file = e.target.files[0];
-	if(/image\/\w+/.test(file.type)) {
-		uploadImage(file)
-    }	
-})
-function uploadImage(file){
-	doUpload(file);
-	/*var obj = new FileReader();
-	obj.readAsDataURL(file);
-	obj.onload=function(f){
-		var image = new Image();
-		image.src = f.target.result;
-		image.onload = function(){
-			var iw = this.width;
-			var ih = this.height;
-			if(iw > 100){
-				ih = (100*ih)/iw;
-				ih = ih.toFixed(2);
-				iw = 100;
-			}
-			var message = 'flag=pic&msg='+f.target.result+'&w='+iw+'&h='+ih;
-			if(isPrivate > 0){
-				message = message+'&private=1&for_id='+isPrivate;
-			}
-			ws.send(message);
-		}
-
-	}*/	
-}
-//执行上传
-function doUpload(obj){
-	var file = obj;
-	if(fileStart < file.size){
-		var blob = file.slice(fileStart, fileStart + fileChunkSize);
-		var formData = new FormData();
-		fileStart = fileStart + blob.size;
-		formData.append('file',blob);
-		$.ajax({
-			url:'./api/uploadHandel.php',
-			type: 'POST',
-			dataType: 'json',
-			data: formData,
-			//这两个设置项必填
-			contentType: false,
-			processData: false,
-			success:function(data){
-				if(data.state==1){
-					progress(fileStart,file);
-					doUpload(file);
-				}
-			}
-		})
+//上传文件
+var obj = new uploadFile({
+		fileName : 'sendFile',
+		fileIdName : 'sendFile',
+		chunkSize  : 1 * 1024 * 1024, //单位M
+		httpRequestUrl : '../../NetChat/api/uploadHandel.php'
+	});
+	//进度
+    obj.progress = function(data){
+		console.log(data);
 	}
-}
-//进度调用
-function progress(start,obj){
-	var pc = (start/obj.size) * 100;
-	console.log(pc+'%');
-}
+	//完成
+	obj.uploadSuccess = function(data){
+		var result = data;
+		var obj = new FileReader();
+		obj.readAsDataURL(this.fileObject);
+		obj.onload=function(f){
+			var image = new Image();
+			image.src = f.target.result;
+			image.onload = function(){
+				var iw = this.width;
+				var ih = this.height;
+				if(iw > 100){
+					ih = (100*ih)/iw;
+					ih = ih.toFixed(2);
+					iw = 100;
+				}
+				var message = 'flag=pic&msg='+'upload/'+result.saveFileName+'&w='+iw+'&h='+ih;
+				if(isPrivate > 0){
+					message = message+'&private=1&for_id='+isPrivate;
+				}
+				ws.send(message);
+			}
+		}
+	}
+
 
 //工具栏事件
 $('#ct_file .file_img').click(function(event){
