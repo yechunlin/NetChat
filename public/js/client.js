@@ -102,7 +102,7 @@ ws.onmessage=function(msg){
 	}else if(data.flag == 'pic'){
 		//发送图片
 		if(clientId == data.id){
-			content.append(addPic(data,'_right'));
+			//content.append(addPic(data,'_right'));
 		}else{
 			content.append(addPic(data));	
 		}
@@ -200,7 +200,27 @@ var obj = new uploadFile({
 	});
 	//开始上传
 	obj.uploadStart = function(data){
-		console.log(data)
+		var that = this;
+		if(/image\/\w+/.test(data.fileType)) {
+			var readerObj = new FileReader();
+			readerObj.readAsDataURL(this.fileObject);
+			readerObj.onload=function(f){
+				var image = new Image();
+				image.src = f.target.result;
+				image.onload = function(){
+					var iw = this.width;
+					var ih = this.height;
+					if(iw > 100){
+						ih = (100*ih)/iw;
+						ih = ih.toFixed(2);
+						iw = 100;
+					}
+					that.fileImageW = iw;
+					that.fileImageH = ih;
+					content.append(addPic({'img':clientImg,'msg':f.target.result,'nickname':clientName,'w':iw,'h':ih},'_right'));	
+				}
+			}
+		}	
 	}
 	//进度
     obj.progress = function(data){
@@ -208,27 +228,11 @@ var obj = new uploadFile({
 	}
 	//完成
 	obj.uploadSuccess = function(data){
-		var result = data;
-		var obj = new FileReader();
-		obj.readAsDataURL(this.fileObject);
-		obj.onload=function(f){
-			var image = new Image();
-			image.src = f.target.result;
-			image.onload = function(){
-				var iw = this.width;
-				var ih = this.height;
-				if(iw > 100){
-					ih = (100*ih)/iw;
-					ih = ih.toFixed(2);
-					iw = 100;
-				}
-				var message = 'flag=pic&msg='+'upload/'+result.saveFileName+'&w='+iw+'&h='+ih;
-				if(isPrivate > 0){
-					message = message+'&private=1&for_id='+isPrivate;
-				}
-				ws.send(message);
-			}
+		var message = 'flag=pic&msg='+'upload/'+data.saveFileName+'&w='+this.fileImageW+'&h='+this.fileImageH;
+		if(isPrivate > 0){
+			message = message+'&private=1&for_id='+isPrivate;
 		}
+		ws.send(message);
 	}
 
 
