@@ -30,6 +30,12 @@ class uploadFile{
 			var index = file.name.lastIndexOf('.');
 			that.saveFileExtention = file.name.substring(index + 1);//获取文件后缀
 			that.saveFileType = file.type;//获取文件类型
+			//通报.开始上传
+			that.uploadStart({
+				'fileName' : file.name,
+				'fileSize' : file.size,
+				'saveFileType' : file.type
+			});
 			//进行文件上传
 			that.execUpload();
 		});
@@ -90,6 +96,10 @@ class uploadFile{
 		}else{
 			this.init();
 		}
+	}
+	//开始上传
+	uploadStart(data){
+		//
 	}
 	//进度调用
 	progress(data){

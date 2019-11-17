@@ -198,6 +198,10 @@ var obj = new uploadFile({
 		chunkSize  : 1 * 1024 * 1024, //单位M
 		httpRequestUrl : '../../NetChat/api/uploadHandel.php'
 	});
+	//开始上传
+	obj.uploadStart = function(data){
+		console.log(data)
+	}
 	//进度
     obj.progress = function(data){
 		console.log(data);
