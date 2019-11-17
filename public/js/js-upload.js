@@ -34,7 +34,7 @@ class uploadFile{
 			that.uploadStart({
 				'fileName' : file.name,
 				'fileSize' : file.size,
-				'saveFileType' : file.type
+				'fileType' : file.type
 			});
 			//进行文件上传
 			that.execUpload();
