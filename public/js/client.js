@@ -287,7 +287,7 @@ var obj = new uploadFile({
 	}
 	//上传完成
 	obj.uploadSuccess = function(data){
-		var message = 'flag=file&fileTypeHome='+this.fileTypeHome+'&msg='+'upload/'+data.saveFileName+'&fileSize='+this.fileObject.size+'&fileName='+this.fileObject.name+'&w='+this.fileImageW+'&h='+this.fileImageH;
+		var message = 'flag=file&fileTypeHome='+this.fileTypeHome+'&msg='+data.saveFilePath+data.saveFileName+'&fileSize='+this.fileObject.size+'&fileName='+this.fileObject.name+'&w='+this.fileImageW+'&h='+this.fileImageH;
 		if(isPrivate > 0){
 			message = message+'&private=1&for_id='+isPrivate;
 		}
