@@ -15,7 +15,7 @@ class uploadFile{
 		this.uploadFileObj = document.getElementById(initInfo.fileIdName); //获取文件对象
 		this.chunkSize  = initInfo.chunkSize; //分片文件大小
 		this.uploadChunkNum = 0; //计算需要上传多少次，方便显示进度
-		this.uploadTimes = 0; //各位属于哪一次
+		this.uploadTimes = 0; //用于进度显示，当前属于哪一次
 		this.httpRequestUrl = initInfo.httpRequestUrl;// 服务端api
 		this.fileStart = 0;// 分片进度
 		
@@ -78,16 +78,20 @@ class uploadFile{
 					if (xmlHttpReg.readyState == 4 && xmlHttpReg.status == 200) { 
 							var data = JSON.parse(xmlHttpReg.response);//对返回数据做对象转换
 							if(data.state == 1){
+								//通报.上传进度
 								that.progress({
 									'size' : that.fileObject.size,
 									'needUploadNum' : that.uploadChunkNum,
 									'thisTurn' : ++that.uploadTimes,
 									'havefinished' : (that.fileStart/that.fileObject.size) * 100
 								});
+								
 								that.saveFileName = data.saveFileName;
 								if(that.fileStart >= that.fileObject.size){
+									//通报.上传完成
 									that.uploadSuccess(data);
 								}
+								//递归，持续上传
 								that.execUpload();
 							}
 					 }
