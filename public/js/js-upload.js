@@ -24,7 +24,7 @@ class uploadFile{
 			var file = event.target.files[0];
 			//多次在同一个input上选择文件，当取消时，会出现file为undefined
 			if(typeof(file) == 'undefined') return ;
-
+			
 			that.fileObject = file;
 			that.uploadChunkNum = Math.ceil(file.size/that.chunkSize);
 			var index = file.name.lastIndexOf('.');

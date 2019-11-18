@@ -137,6 +137,9 @@
 		overflow:hidden;
 		margin:10px
 	}
+	.send_msg_box a{
+		color:#000;
+	}
 	.system_msg{
 		text-align:center;
 		font-size:10px;

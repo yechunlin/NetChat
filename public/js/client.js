@@ -99,12 +99,18 @@ ws.onmessage=function(msg){
 		}else{
 			content.append(addNormal(data));
 		}
-	}else if(data.flag == 'pic'){
-		//发送图片
+	}else if(data.flag == 'file'){
+		//发送文件
 		if(clientId == data.id){
 			//content.append(addPic(data,'_right'));
 		}else{
-			content.append(addPic(data));	
+			switch(data.fileTypeHome){
+				case 'image':
+					content.append(addPic(data));
+				break;
+				default:
+					content.append(addFile(data));
+			}	
 		}
 		
 	}else if(data.flag == 'leave'){
@@ -124,7 +130,7 @@ function addClients(id,img,name){
 //normal消息回复
 function addNormal(data,loc=''){
 	var show_name = '<div class="show_name">'+data.nickname+'</div>';
-	if(parseInt(isPrivate) || loc!=''){
+	if(parseInt(isPrivate) || loc!=''){//是否显示名称，下同
 		show_name = '';
 	}
 	return '<div class="send_msg_box"><div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div>'+show_name+'<div class="send_msg'+loc+'">'+data.msg+'</div></div>';
@@ -137,6 +143,32 @@ function addPic(data,loc=''){
 		show_name = '';
 	}
 	return '<div class="send_msg_box"><div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div>'+show_name+'<img src="'+data.msg+'" style="width:'+data.w+'px;height:'+data.h+'px;background:none" class="send_msg'+loc+'"></div>';
+}
+
+//发送文件
+function addFile(data,loc=''){
+	var show_name = '<div class="show_name">'+data.nickname+'</div>';
+	if(parseInt(isPrivate) || loc!=''){
+		show_name = '';
+	}
+	var str = '<div class="send_msg_box">';
+		str += '<div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div>';
+		str += show_name;
+		if(data.msg!=''){//发送方不提供线上地址
+			str += '<a href="'+data.msg+'" target="_blank">';
+		}
+		str += '<div class="send_msg'+loc+'">';
+		str += '<div class="" style="float:left;margin-top:10px"><img src="./public/images/files/'+data.fileTypeHome+'.png"></div>';
+		str	+= '<div class="" style="float:left;margin-left:10px;width:150px">';
+		str += '<p>'+data.fileName+'</p>';
+		str += '<p>'+show_file_size(data.fileSize)+'<span id="uploadProcess" style="float:right"></span></p>';
+		str += '</div>';
+		str += '</div>';
+		if(data.msg!=''){
+			str += '</a>';
+		}
+		str += '</div>';
+	return str;	
 }
 
 //系统消息
@@ -201,34 +233,61 @@ var obj = new uploadFile({
 	//开始上传
 	obj.uploadStart = function(data){
 		var that = this;
-		if(/image\/\w+/.test(data.fileType)) {
-			var readerObj = new FileReader();
-			readerObj.readAsDataURL(this.fileObject);
-			readerObj.onload=function(f){
-				var image = new Image();
-				image.src = f.target.result;
-				image.onload = function(){
-					var iw = this.width;
-					var ih = this.height;
-					if(iw > 100){
-						ih = (100*ih)/iw;
-						ih = ih.toFixed(2);
-						iw = 100;
+		if(data.fileType == "") data.fileType = 'empty/';
+		typeHome = data.fileType.split('/');
+		this.fileTypeHome = typeHome[0];
+		//文件与图片分开
+		switch(typeHome[0]){
+			case 'image':
+				var readerObj = new FileReader();
+				readerObj.readAsDataURL(this.fileObject);
+				readerObj.onload=function(f){
+					var image = new Image();
+					image.src = f.target.result;
+					image.onload = function(){
+						var iw = this.width;
+						var ih = this.height;
+						if(iw > 100){
+							ih = (100*ih)/iw;
+							ih = ih.toFixed(2);
+							iw = 100;
+						}
+						that.fileImageW = iw;
+						that.fileImageH = ih;
+						content.append(addPic({
+							'img':clientImg,
+							'msg':f.target.result,
+							'nickname':clientName,
+							'w':iw,
+							'h':ih,
+						},'_right'));	
 					}
-					that.fileImageW = iw;
-					that.fileImageH = ih;
-					content.append(addPic({'img':clientImg,'msg':f.target.result,'nickname':clientName,'w':iw,'h':ih},'_right'));	
-				}
-			}
-		}	
+				}								
+			break;
+			default :
+				content.append(addFile({
+					'img':clientImg,
+					'nickname':clientName,
+					'msg':'',
+					'fileTypeHome':typeHome[0],
+					'fileName': data.fileName,
+					'fileSize': data.fileSize
+				},'_right'));
+		}
 	}
-	//进度
+	//上传进度，监听
     obj.progress = function(data){
-		console.log(data);
+		//console.log(data);
+		$('#uploadProcess').text(parseInt(data.havefinished) + '%');
+		if(data.needUploadNum == data.thisTurn){
+			setTimeout(() => {
+                $('#uploadProcess').remove();//完成后延迟0.5秒，纯粹是为了显示100%；可关闭
+            }, 500);
+		}
 	}
-	//完成
+	//上传完成
 	obj.uploadSuccess = function(data){
-		var message = 'flag=pic&msg='+'upload/'+data.saveFileName+'&w='+this.fileImageW+'&h='+this.fileImageH;
+		var message = 'flag=file&fileTypeHome='+this.fileTypeHome+'&msg='+'upload/'+data.saveFileName+'&fileSize='+this.fileObject.size+'&fileName='+this.fileObject.name+'&w='+this.fileImageW+'&h='+this.fileImageH;
 		if(isPrivate > 0){
 			message = message+'&private=1&for_id='+isPrivate;
 		}

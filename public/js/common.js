@@ -1,3 +1,23 @@
+//文件大小单位化
+function show_file_size(size){
+	var size = Number(size);
+	var res_size = size;
+	if(size < 1024){
+		unit = 'B';
+	}else if(size < 1024*1024){
+		res_size = Math.floor( (size/1024) * 10 );
+		unit = 'K';
+	}else if(size < 1024*1024*1024){
+		res_size = Math.floor( (size/(1024*1024)) * 10 );
+		unit = 'M';
+	}else{
+		res_size = Math.floor( (size/(1024*1024*1024)) * 10 );
+		unit = 'G';
+	}
+	res_size = res_size/10;
+	return res_size + unit;
+}
+
 function getIPs(callback){
     var ip_dups = {};
     //compatibility for firefox and chrome
