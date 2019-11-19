@@ -65,11 +65,16 @@ class uploadFile{
 			this.fileStart = this.fileStart + blob.size;
 			//创建formdata对象
 			var formData = new FormData();
-			formData.append(this.fileName,blob);
-			formData.append('get_file_name',this.fileName);
-			formData.append('save_file_name',this.saveFileName);
-			formData.append('save_file_extention',this.saveFileExtention);
-			formData.append('save_file_type',this.saveFileType);
+			formData.append(this.fileName,blob);//文件包
+			formData.append('get_file_name',this.fileName);//file的name属性名
+			formData.append('save_file_name',this.saveFileName);//服务端保存文件名
+			formData.append('save_file_extention',this.saveFileExtention);//扩展名
+			formData.append('save_file_type',this.saveFileType);//文件类型
+			if(this.fileStart >= this.fileObject.size){
+				//最后一次片包，通知服务端
+				formData.append('save_file_chunk_last',1);//文件类型
+			}
+
 			//如果实例化成功,就调用open()方法,就开始准备向服务器发送请求
 			if (xmlHttpReg != null) {
 				xmlHttpReg.open('post', this.httpRequestUrl, true);
