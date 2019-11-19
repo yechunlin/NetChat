@@ -106,6 +106,7 @@ ws.onmessage=function(msg){
 		}else{
 			switch(data.fileTypeHome){
 				case 'image':
+					data.orgMsg = "'"+data.msg+"'";
 					content.append(addPic(data));
 				break;
 				default:
@@ -142,7 +143,7 @@ function addPic(data,loc=''){
 	if(parseInt(isPrivate) || loc!=''){
 		show_name = '';
 	}
-	return '<div class="send_msg_box"><div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div>'+show_name+'<img src="'+data.msg+'" style="width:'+data.w+'px;background:none" class="send_msg'+loc+'"></div>';
+	return '<div class="send_msg_box" ondblclick="getOrgPic('+data.orgMsg+')"><div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div>'+show_name+'<img src="'+data.msg+'" style="width:'+data.w+'px;background:none" class="send_msg'+loc+'"></div>';
 }
 
 //发送文件
@@ -269,7 +270,7 @@ var obj = new uploadFile({
 	}
 	//上传进度，监听
     obj.progress = function(data){
-		console.log(data);
+		//console.log(data);
 		$('#uploadProcess').text(parseInt(data.havefinished) + '%');
 		if(data.needUploadNum == data.thisTurn){
 			setTimeout(() => {
@@ -286,6 +287,11 @@ var obj = new uploadFile({
 		ws.send(message);
 	}
 
+//获取image信息原图
+function getOrgPic(s){
+	if(typeof(s) == 'undefined') return;
+	var orgSrc = s.replace('_sm.', '.');
+}
 
 //工具栏事件
 $('#ct_file .file_img').click(function(event){
