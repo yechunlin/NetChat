@@ -42,6 +42,7 @@ class uploadFile{
 	}
 	//完成时，部分变量初始化
 	init(){
+		this.uploadFileObj.value = '';
 		this.uploadTimes = 0;
 		this.fileStart = 0;
 		this.saveFileName = '';

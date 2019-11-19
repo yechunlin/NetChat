@@ -142,7 +142,7 @@ function addPic(data,loc=''){
 	if(parseInt(isPrivate) || loc!=''){
 		show_name = '';
 	}
-	return '<div class="send_msg_box"><div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div>'+show_name+'<img src="'+data.msg+'" style="width:'+data.w+'px;height:'+data.h+'px;background:none" class="send_msg'+loc+'"></div>';
+	return '<div class="send_msg_box"><div class="send_msg_img'+loc+'" style="background-image:url('+data.img+')"></div>'+show_name+'<img src="'+data.msg+'" style="width:'+data.w+'px;background:none" class="send_msg'+loc+'"></div>';
 }
 
 //发送文件
@@ -245,21 +245,13 @@ var obj = new uploadFile({
 					var image = new Image();
 					image.src = f.target.result;
 					image.onload = function(){
-						var iw = this.width;
-						var ih = this.height;
-						if(iw > 100){
-							ih = (100*ih)/iw;
-							ih = ih.toFixed(2);
-							iw = 100;
-						}
+						var iw = this.width > 150 ? 150 : this.width;
 						that.fileImageW = iw;
-						that.fileImageH = ih;
 						content.append(addPic({
 							'img':clientImg,
 							'msg':f.target.result,
 							'nickname':clientName,
-							'w':iw,
-							'h':ih,
+							'w':iw
 						},'_right'));	
 					}
 				}								
@@ -287,7 +279,7 @@ var obj = new uploadFile({
 	}
 	//上传完成
 	obj.uploadSuccess = function(data){
-		var message = 'flag=file&fileTypeHome='+this.fileTypeHome+'&msg='+data.saveFilePath+data.saveFileName+'&fileSize='+this.fileObject.size+'&fileName='+this.fileObject.name+'&w='+this.fileImageW+'&h='+this.fileImageH;
+		var message = 'flag=file&fileTypeHome='+this.fileTypeHome+'&msg='+data.saveFilePath+data.saveFileName+'&fileSize='+this.fileObject.size+'&fileName='+this.fileObject.name+'&w='+this.fileImageW;
 		if(isPrivate > 0){
 			message = message+'&private=1&for_id='+isPrivate;
 		}
