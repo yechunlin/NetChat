@@ -6,7 +6,6 @@
 	    border:1px solid #e1e1e1;
 		width:800px;
 		margin:10px auto;
-		background:;
 		overflow:hidden
 	}
 	#content_box{
@@ -329,4 +328,46 @@
 		margin-right:5px;
 		color:#00cc00;
 		font-size:12px
+	}
+	.org_pic_box{
+		border:1px solid #3879e9;
+		background: #f5f5f5;
+		width:500px;
+		height:450px;
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		right: 0px;
+		bottom: 0px;
+		margin: auto;
+	}
+	.org_pic_box .view_pic_top{
+		height:40px;
+		font-size:13px
+	}
+	.org_pic_box .view_pic_top .view_pic_del {
+		display:block;
+		width:30px;
+		line-height:25px;
+		color:#ccc;
+		text-align:center;
+		position:absolute;
+		right:0;
+		top:0
+	}
+	.org_pic_box .view_pic_top .view_pic_del:hover{
+		background:red
+	}
+	.view_pic{
+		height:360px;
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+		width:100%;
+	}
+	.view_pic img{
+		height:100%
+	}
+	.org_pic_box .view_pic_bom{
+		height:50px
 	}

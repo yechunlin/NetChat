@@ -106,7 +106,7 @@ ws.onmessage=function(msg){
 		}else{
 			switch(data.fileTypeHome){
 				case 'image':
-					data.orgMsg = "'"+data.msg+"'";
+					data.orgMsg = "'"+data.msg+"'";//单引号包裹
 					content.append(addPic(data));
 				break;
 				default:
@@ -177,19 +177,6 @@ function addSystem(systemmsg){
 	return '<div class="send_msg_box"><div class="system_msg">'+systemmsg+'</div></div>';
 }
 
-//获取url参数
-function GetRequest() {
-   var url = decodeURI(location.search); //获取url中"?"符后的字串,支持汉字url解码
-   var theRequest = new Object();
-   if (url.indexOf("?") != -1) {
-	  var str = url.substr(1);
-	  strs = str.split("&");
-	  for(var i = 0; i < strs.length; i ++) {
-		theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
-	  }
-   }
-   return theRequest;
-}
 
 //发送
 $('#sb').click(function(){
@@ -287,10 +274,21 @@ var obj = new uploadFile({
 		ws.send(message);
 	}
 
-//获取image信息原图
+//获取image原图
 function getOrgPic(s){
 	if(typeof(s) == 'undefined') return;
 	var orgSrc = s.replace('_sm.', '.');
+	/*	//图片预览，暂时放弃
+		var str = '<div class="org_pic_box">';
+		str +='<div class="view_pic_top">';
+		str	+='<span style="margin:5px auto;display:block;width:60px">图片预览</span>';
+		str +='<span class="view_pic_del">X</span>';
+		str	+='</div>';
+		str +='<div class="view_pic"><img src="'+orgSrc+'" ></div>';
+		str +='<div class="view_pic_bom"></div>';
+		str +='</div>';
+	$('body').append(str);*/
+	window.open(orgSrc);
 }
 
 //工具栏事件
@@ -316,11 +314,6 @@ $('#ct_file .file_img').click(function(event){
 	
 
 })
-//emoji表情
-//$('#ct_file .file_img').eq(0).click(function(event){
-	//event.stopPropagation();
-
-//})
 
 //隐藏emoji
 $(document).click(function(){
@@ -329,7 +322,7 @@ $(document).click(function(){
 		emoji.find('img').remove();
 })
 
-//绑定未来事件，得放在$(function(){}里
+//绑定未来事件，得放在$(function(){}里,类似于window.onload(),页面加载完后才能完成绑定
 $(function(){
 	//发送表情
 	$('#emoji_box').on('click','img',function(event){
@@ -385,7 +378,7 @@ $(function(){
 		}
 
 	})
-
+	//私聊
 	$('#user_list').on('click','.userlist',function(){
 		var id = $(this).attr('id');
 		if($('#content_'+id).length>0){
