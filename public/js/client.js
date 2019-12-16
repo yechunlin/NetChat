@@ -257,7 +257,6 @@ var obj = new uploadFile({
 	}
 	//上传进度，监听
     obj.progress = function(data){
-		//console.log(data);
 		$('#uploadProcess').text(parseInt(data.havefinished) + '%');
 		if(data.needUploadNum == data.thisTurn){
 			setTimeout(() => {
@@ -267,7 +266,7 @@ var obj = new uploadFile({
 	}
 	//上传完成
 	obj.uploadSuccess = function(data){
-		var message = 'flag=file&fileTypeHome='+this.fileTypeHome+'&msg='+data.saveFilePath+data.saveFileSmall+'&fileSize='+this.fileObject.size+'&fileName='+this.fileObject.name+'&w='+this.fileImageW;
+		var message = 'flag=file&fileTypeHome='+this.fileTypeHome+'&msg='+data.saveFilePath+data.saveFileName+'&fileSize='+this.fileObject.size+'&fileName='+this.fileObject.name+'&w='+this.fileImageW;
 		if(isPrivate > 0){
 			message = message+'&private=1&for_id='+isPrivate;
 		}

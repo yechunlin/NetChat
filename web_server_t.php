@@ -19,7 +19,7 @@ $ws->set(array(
 		'worker_num' => 4,
 		'daemonize'=>1,
 		'ssl_cert_file' => '/usr/local/ssl/Nginx/1_www.yechunlin.com_bundle.crt',
-    		'ssl_key_file' => '/usr/local/ssl/Nginx/2_www.yechunlin.com.key',
+    		'ssl_key_file' => '/usr/local/ssl/Nginx/2_www.yechunlin.com.key'
 	)
 );
 
