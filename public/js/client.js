@@ -181,10 +181,12 @@ function addSystem(systemmsg){
 //发送
 $('#sb').click(function(){
 	var msg = $('#input_box');
-	if(msg.html() == ""){
+	var org_msg = msg.html().replace(/&nbsp;/ig,'');
+	if(msg.html() == " " || org_msg == " "){
 		alert('写点什么');
 		return false;
 	}
+	
 	var message = 'flag=normal&msg='+msg.html();
 	if(isPrivate > 0){
 		message = message+'&private=1&for_id='+isPrivate;
@@ -368,7 +370,7 @@ $(function(){
 			content.hide();
 			if($('#content_'+id).length==0){
 				$('#ct_top').after('<div id="content_'+id+'" class="content"></div>');
-				$('#'+id).append('<span class="red_cicle" id="red_"'+id+'></span>');
+				$('#'+id).append('<span class="red_cicle" id="red_'+id+'"></span>');
 				$('#'+id).append('<span class="show_sl">charting</span>');
 			}
 			$('.userlist').removeClass('point_bg');
