@@ -1,5 +1,5 @@
 <?php
-$ws = new swoole_websocket_server('172.21.0.16',8888,SWOOLE_PROCESS, SWOOLE_SOCK_TCP);
+$ws = new swoole_websocket_server('172.21.0.16',8888,SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
 
 //启用swoole内置表
 $table  = new swoole_table(4096);
@@ -17,7 +17,9 @@ $redis->select(1);
 $ws->set(array(
 		'task_worker_num' => 4,
 		'worker_num' => 4,
-		'daemonize'=>1
+		'daemonize'=>1,
+		'ssl_cert_file' => '/usr/local/ssl/Nginx/1_www.yechunlin.com_bundle.crt',
+    		'ssl_key_file' => '/usr/local/ssl/Nginx/2_www.yechunlin.com.key',
 	)
 );
 

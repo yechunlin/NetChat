@@ -8,7 +8,7 @@ var aitasize=0;
 var isPrivate=0;
 //判断当前浏览器是否支持WebSocket
 if ('WebSocket' in window) {
-	ws = new WebSocket("ws://49.233.147.39:8888/");
+	ws = new WebSocket("wss://www.yechunlin.com:8888/");
 } else {
 	alert('当前浏览器不支持WebSocket')
 }
