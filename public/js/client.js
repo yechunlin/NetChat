@@ -182,11 +182,11 @@ function addSystem(systemmsg){
 $('#sb').click(function(){
 	var msg = $('#input_box');
 	var org_msg = msg.html().replace(/&nbsp;/ig,'');
-	if(msg.html() == " " || org_msg == " "){
+	if(msg.html() == "" || org_msg == ""){
 		alert('写点什么');
+		$('#input_box').html('');
 		return false;
-	}
-	
+	}	
 	var message = 'flag=normal&msg='+msg.html();
 	if(isPrivate > 0){
 		message = message+'&private=1&for_id='+isPrivate;
