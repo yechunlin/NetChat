@@ -2,10 +2,8 @@
 class WebSocketServer
 {
 	public  $ws;
-	public  $table;
-	public  $redis;
 	static  $ssl = true;
-	private $connectConf = array('ip'=>'172.21.0.16', 'port'=> 8889);
+	private $connectConf = array('ip'=>'172.21.0.16', 'port'=> 8888);
 
 	public function __construct($conf = array()){
 		$conf = array_merge($this->connectConf, $conf);
@@ -15,8 +13,8 @@ class WebSocketServer
 		}
 		$this->ws = new swoole_websocket_server($conf['ip'],$conf['port'],SWOOLE_PROCESS,$tcp);
 
-		$this->setTable();//设置内置表
-		$this->setRedis();//设置Redis
+		$this->ws->table = $this->setTable();//设置内置表
+		$this->ws->redis = $this->setRedis();//设置Redis
 		//配置
 		$setConf = array(
                                 'task_worker_num' => 4,
@@ -47,13 +45,13 @@ class WebSocketServer
 		$table->column('nickname', swoole_table::TYPE_STRING,64);
 		$table->column('img', swoole_table::TYPE_STRING,128);
 		$table->create();
-		$this->table = $table;
+		return $table;
 	}
 	private function setRedis(){
 		$redis = new Redis;
 		$redis->connect('127.0.0.1', 6379);
 		$redis->select(1);
-		$this->redis = $redis;
+		return $redis;
 	}
 
 	public function onStart(){
@@ -72,11 +70,24 @@ class WebSocketServer
 		$this->workerFun($ws,$data);
 		$ws->finish('ok');
 	}
-	public function onFinish($ws, $task_id, $data){}
-	public function onClose($ws, $fd){}
-
+	public function onFinish($ws, $task_id, $data){
+		echo $data."\r\n";
+	}
+	public function onClose($ws, $fd){
+		$client = $ws->table->get($fd);
+		if($client){
+			$data = array(
+				'flag'=>'leave',
+				'id'  =>$fd,
+				'nickname'=>$client['nickname']
+			);
+			$ws->table->del($fd);
+			$this->sendMsg($ws,$ws->table, $data);//通知其他人，某人下线
+			echo "client:{$fd} has closed\r\n";
+		}
+	}
 	public function workerFun($ws,$data){
-		global $this->redis;
+		$redis = $ws->redis;
 		$old_clients = $ws->table;//连接池
 		//新人
 		if($data['flag'] == 'new'){
@@ -109,12 +120,11 @@ class WebSocketServer
 		$data['nickname'] = $ws->table->get($data['id'],'nickname');
 
 		//连续五分钟内无交互，显示一次时间
-		if(!$this->redis->get('web_socket_time')){
-			$this->redis->set('web_socket_time', 1, 300);
+		if(!$redis->get('web_socket_time')){
+			$redis->set('web_socket_time', 1, 300);
 			$data['date'] = date('Y-m-d H:i:s');
 		}
-		$this->redis->set('web_socket_time', 1, 300);
-
+		$redis->set('web_socket_time', 1, 300);
 		if(isset($data['private'])){
 			//私聊
 			$sl_arr[$data['id']] = $data['id'];
@@ -134,7 +144,7 @@ class WebSocketServer
 	//发送数据
 	public function sendMsg($ws,$clients,$data){
 		foreach($clients as $fd => $name){
-        	$ws->push($fd, json_encode($data));
+        		$ws->push($fd, json_encode($data));
 		}	
 	}
 
