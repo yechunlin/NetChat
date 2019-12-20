@@ -18,8 +18,8 @@ $ws->set(array(
 		'task_worker_num' => 4,
 		'worker_num' => 4,
 		'daemonize'=>1,
-		'heartbeat_check_interval' => 30,
-    		'heartbeat_idle_time' => 60,
+		'heartbeat_check_interval' => 300,
+    		'heartbeat_idle_time' => 600,
 		'ssl_cert_file' => '/usr/local/ssl/Nginx/1_www.yechunlin.com_bundle.crt',
     		'ssl_key_file' => '/usr/local/ssl/Nginx/2_www.yechunlin.com.key'
 	)
