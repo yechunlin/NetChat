@@ -5,31 +5,31 @@ class WebSocketServer
 	public  $table;
 	public  $redis;
 	private $ssl = true;
-	private $connectConf = array(
-				'ip'      => '172.21.0.16',
-				'port'    => 8889
-			);
+	private $connectConf = array('ip'=>'172.21.0.16', 'port'=> 8889);
 
 	public function __construct($conf = array()){
 		$conf = array_merge($this->connectConf, $conf);
+		$tcp = SWOOLE_SOCK_TCP;
 		if($this->ssl){
-			$this->ws = new swoole_websocket_server($conf['ip'],$conf['port'],SWOOLE_PROCESS,SWOOLE_SOCK_TCP | SWOOLE_SSL);
-		}else{
-			$this->ws = new swoole_websocket_server($conf['ip'],$conf['port'],SWOOLE_PROCESS,SWOOLE_SOCK_TCP);
+			$tcp = SWOOLE_SOCK_TCP | SWOOLE_SSL;
 		}
+		$this->ws = new swoole_websocket_server($conf['ip'],$conf['port'],SWOOLE_PROCESS,$tcp);
+
 		$this->setTable();//设置内置表
-		$this->setRedis();
+		$this->setRedis();//设置Redis
 		//配置
-		$this->ws->set(array(
-				'task_worker_num' => 4,
-				'worker_num'      => 4,
-				'daemonize'       => 0,
-				'heartbeat_check_interval' => 300,
-				'heartbeat_idle_time'      => 600,
-				'ssl_cert_file' => '/usr/local/ssl/Nginx/1_www.yechunlin.com_bundle.crt',
-				'ssl_key_file'  => '/usr/local/ssl/Nginx/2_www.yechunlin.com.key'
-			)
+		$setConf = array(
+                                'task_worker_num' => 4,
+                                'worker_num'      => 4,
+                                'daemonize'       => 0,
+                                'heartbeat_check_interval' => 300,
+                                'heartbeat_idle_time'      => 600
 		);
+		if($this->ssl){
+			$setConf['ssl_cert_file'] = '/usr/local/ssl/Nginx/1_www.yechunlin.com_bundle.crt';
+			$setConf['ssl_key_file'] = '/usr/local/ssl/Nginx/2_www.yechunlin.com.key';
+		}
+		$this->ws->set($setConf);		
 
 		$this->ws->on('start', [$this,'onStart']);
 		$this->ws->on('open', [$this,'onOpen']);
