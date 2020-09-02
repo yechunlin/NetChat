@@ -1,32 +1,33 @@
 var content ;
 var userlist = $('#user_list');
 var ws = null;
-var clientName;
-var clientImg;
+var clientImg  = "./public/images/heads/default.jpg";
 var clientId=0;
 var aitasize=0;
 var isPrivate=0;
+var chatKey='';
+var params = GetRequest();
+    chatKey = params.signature;
 //判断当前浏览器是否支持WebSocket
 if ('WebSocket' in window) {
-	ws = new WebSocket("wss://www.yechunlin.com:8888/");
+	ws = new WebSocket("wss://www.yechunlin.com:8888?signature="+chatKey);
 } else {
 	alert('当前浏览器不支持WebSocket')
 }
 
 //连接成功
 ws.onopen=function(){
-	var params = GetRequest();
-	$.post('./api/index.php',params,function(data){
-		if(parseInt(data.code)){
-			clientName = data.nickname;
-			clientImg = data.img;
-			$('#login_user_img').css('background-image','url('+clientImg+')');
-			$('#login_user').text(clientName);
-			ws.send('flag=new&nickname='+clientName+'&img='+clientImg);
-		}	
-	},'json');
+	$('#login_user_img').css('background-image','url('+clientImg+')');
+	$('#login_user').text(clientName);
+	ws.send('flag=new&userId='+userId+'&nickname='+clientName+'&img='+clientImg);
 }
-
+ws.onclose = function (event) {
+	alert('非法连接');
+	window.opener=null;
+	window.open('','_self');
+	window.close();
+	//window.location.href='login.php';
+}
 //消息触发回调
 ws.onmessage=function(msg){
 	eval('var data='+msg.data);
