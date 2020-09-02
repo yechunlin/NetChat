@@ -6,7 +6,12 @@ function GetRequest() {
 	  var str = url.substr(1);
 	  strs = str.split("&");
 	  for(var i = 0; i < strs.length; i ++) {
-		theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
+		var tmpParams = strs[i].split("=");
+		var tmpStr = '';
+		for(var j = 1; j < tmpParams.length; j++){
+			tmpStr += unescape(tmpParams[j])+'=';
+		}
+		theRequest[tmpParams[0]] = tmpStr.substring(0, tmpStr.lastIndexOf('='));
 	  }
    }
    return theRequest;
