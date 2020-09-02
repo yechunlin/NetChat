@@ -17,9 +17,9 @@ class WebSocketServer
 		$this->ws->redis = $this->setRedis();//设置Redis
 		//配置
 		$setConf = array(
-                                'task_worker_num' => 4,
-                                'worker_num'      => 4,
-                                'daemonize'       => 0,
+                                'task_worker_num' => 2,
+                                'worker_num'      => 2,
+                                'daemonize'       => 1,
                                 'heartbeat_check_interval' => 300,
                                 'heartbeat_idle_time'      => 600
 		);
@@ -41,6 +41,7 @@ class WebSocketServer
 
 	private function setTable(){
 		$table  = new swoole_table(4096);
+		$table->column('fd', swoole_table::TYPE_INT);
 		$table->column('userid', swoole_table::TYPE_INT);
 		$table->column('nickname', swoole_table::TYPE_STRING,64);
 		$table->column('img', swoole_table::TYPE_STRING,128);
@@ -50,7 +51,6 @@ class WebSocketServer
 	private function setRedis(){
 		$redis = new Redis;
 		$redis->connect('127.0.0.1', 6379);
-		$redis->select(1);
 		return $redis;
 	}
 
@@ -59,7 +59,13 @@ class WebSocketServer
 		echo "服务启动\r\n";
 	}
 	public function onOpen($ws, $request){
-		echo $request->fd." Joined successfully\r\n";
+		//var_dump($request);
+		$result = $this->checkSign($ws, $request->get['signature']);
+		if($result){
+			//echo $request->fd." Joined successfully\r\n";
+		}else{
+			echo $ws->close($request->fd);
+		}
 	}
 	public function onMessage($ws, $frame){
 		parse_str($frame->data, $data);//解析字符串为数组
@@ -71,7 +77,7 @@ class WebSocketServer
 		$ws->finish('ok');
 	}
 	public function onFinish($ws, $task_id, $data){
-		echo $data."\r\n";
+		//echo $data."\r\n";
 	}
 	public function onClose($ws, $fd){
 		$client = $ws->table->get($fd);
@@ -83,7 +89,7 @@ class WebSocketServer
 			);
 			$ws->table->del($fd);
 			$this->sendMsg($ws,$ws->table, $data);//通知其他人，某人下线
-			echo "client:{$fd} has closed\r\n";
+			//echo "client:{$fd} has closed\r\n";
 		}
 	}
 	public function workerFun($ws,$data){
@@ -97,7 +103,8 @@ class WebSocketServer
 			}
 			$old_clients = $clients;
 			$clients[$data['id']] = array(
-				'userid'   => $data['id'],
+				'fd'       => $data['id'],
+				'userid'   => $data['userId'],
 				'nickname' => $data['nickname'],
 				'img'      => $data['img']
 			);
@@ -129,14 +136,15 @@ class WebSocketServer
 			//私聊
 			$sl_arr[$data['id']] = $data['id'];
 			$sl_arr[$data['for_id']] = $data['for_id'];
-			$userid     = $ws->table->get($data['id'],'userid');
-			$for_userid = $ws->table->get($data['for_id'],'userid');
+			$fd     = $ws->table->get($data['id'],'fd');
+			$for_fd = $ws->table->get($data['for_id'],'fd');
 			$this->sendMsg($ws,$sl_arr,$data);
-			//$this->savemsg($redis, $userid, $for_userid, $data);
+			$this->savemsg($ws,$data, 2);
 		}else{
 			//群聊
-			if($old_clients){
+			if($old_clients){	
 				$this->sendMsg($ws,$old_clients,$data);
+				$this->savemsg($ws,$data);
 			}
 		}
 	}
@@ -146,6 +154,44 @@ class WebSocketServer
 		foreach($clients as $fd => $name){
         		$ws->push($fd, json_encode($data));
 		}	
+	}
+
+	//验证
+	private function checkSign($ws, $token){
+		$redis = $ws->redis;
+		return $redis->get(base64_decode($token));
+	}
+
+	//消息记录
+	function savemsg($ws,$data,$type=1){
+		if(in_array($data['flag'],array('new','leave'))) return;
+		$userId = $ws->table->get($data['id'],'userid');
+		$for_userId = 0;
+		$private_key = 0;
+		$key = 'chat_log';//消息key
+		if($type > 1){
+			$for_userId = $ws->table->get($data['for_id'],'userid');
+			$private_key = $userId + $for_userId;
+		}
+		//获取消息类型
+		$msg_type = 1;
+		if(isset($data['at'])){
+			$msg_type = 2;
+		}
+		if($data['flag'] ==='file'){
+			$msg_type = 3;
+		}
+		$msg = array(
+			'type'      => $type,
+			'private_key'=>$private_key,
+			'msg_type'  => $msg_type,
+			'time'      => time(),
+			'user_id'   => $userId,
+			'dated'     => date('Y-m-d H:i:s'),
+			'text'      => $data['msg'],
+			'to_user_id'=> $for_userId
+		);
+		$ws->redis->lPush($key, serialize($msg));
 	}
 
 }
