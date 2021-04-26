@@ -162,7 +162,7 @@ function addFile(data,loc=''){
 		str += '<div class="send_msg'+loc+'">';
 		str += '<div class="" style="float:left;margin-top:10px"><img src="./public/images/files/'+data.fileTypeHome+'.png"></div>';
 		str	+= '<div class="" style="float:left;margin-left:10px;width:150px">';
-		str += '<p>'+data.fileName+'</p>';
+		str += '<p style="overflow: hidden;margin-top: 7px;text-overflow: ellipsis;-webkit-line-clamp: 2;-webkit-box-orient: vertical;display: -webkit-box;line-height: 20px;">'+data.fileName+'</p>';
 		str += '<p>'+show_file_size(data.fileSize)+'<span id="uploadProcess" style="float:right"></span></p>';
 		str += '</div>';
 		str += '</div>';
